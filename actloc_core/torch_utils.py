@@ -57,8 +57,8 @@ def load_model(checkpoint_path: str, device: torch.device):
         raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
     
     model = TwoHeadTransformer(**DEFAULT_MODEL_PARAMS)
-    
-    state_dict = torch.load(checkpoint_path, map_location='cpu')
+
+    state_dict = torch.load(checkpoint_path, map_location='cpu', weights_only=True)
     model.load_state_dict(state_dict)
     model.to(device)
     model.eval()

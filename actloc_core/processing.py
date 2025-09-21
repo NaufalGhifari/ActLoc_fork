@@ -8,12 +8,12 @@ def filter_points_by_error(points3D: dict, error_threshold: float = 0.5):
     filtered_points = []
     filtered_colors = []
     
-    for point_id, pt in points3D.items():
+    for _, pt in points3D.items():
         if pt.error < error_threshold:
             filtered_points.append(pt.xyz)
             filtered_colors.append(pt.rgb)
-    
-    if not filtered_points:
+
+    if len(filtered_points) == 0:
         raise ValueError(f"No points remain after filtering with error threshold {error_threshold}")
     
     points_array = np.array(filtered_points, dtype=np.float32)

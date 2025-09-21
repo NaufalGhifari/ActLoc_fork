@@ -34,8 +34,7 @@ def capture_best_viewpoint_image(vis, waypoint_idx, x_angle, y_angle, output_fol
     image = (image * 255).astype(np.uint8)
     
     # Create output directory if it doesn't exist
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    os.makedirs(output_folder, exist_ok=True)
     
     # Generate filename
     filename = f"waypoint_{waypoint_idx + 1:05d}_x{int(x_angle)}_y{int(y_angle)}.jpg"

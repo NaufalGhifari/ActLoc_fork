@@ -1,52 +1,32 @@
-<p align="center">
+<!-- <p align="center">
   🚧 <b>Work in Progress</b> 🚧
-</p>
-<p align="center">
-  <h2 align="center">ActLoc: Learning to Localize on the Move via Active Viewpoint Selection</h2>
-  <h5 align="center">Conference on Robot Learning (CoRL) 2025</h5>
-</p>
-
-<div align="center"> 
-
-<a href="https://boysun045.github.io/ActLoc-Project/"><b>Project Page</b></a> | 
-<a href="https://www.arxiv.org/abs/2508.20981"><b>Paper</b></a> | 
-<a href="#"><b>Demo (Coming Soon)</b></a>
-
-</div>
-
-<br>
-
-<div align="center">
+</p> -->
 
 <p align="center">
-  <a href="https://jiajieli7012.github.io/"><strong>Jiajie Li*</strong></a>
-  ·
-  <a href="https://boysun045.github.io/boysun-website/"><strong>Boyang Sun*</strong></a>
-  ·
-  <a href="https://scholar.google.com/citations?user=cZeizisAAAAJ&hl=it"><strong>Luca Di Giammarino</strong></a>
-  ·
-  <a href="https://hermannblum.net/"><strong>Hermann Blum</strong></a>
-  ·
-  <a href="https://scholar.google.com/citations?user=YYH0BjEAAAAJ"><strong>Marc Pollefeys</strong></a>
-</p>
-<p align="center"><strong>(* Equal Contribution)</strong></p>
+  <h1 align="center"><ins>ActLoc:</ins><br>Learning to Localize on the Move via Active Viewpoint Selection</h1>
+  <p align="center">
+    <a href="https://jiajieli7012.github.io/">Jiajie&nbsp;Li*</a>
+    ·
+    <a href="https://boysun045.github.io/boysun-website/">Boyang&nbsp;Sun*</a>
+    ·
+    <a href="https://scholar.google.com/citations?user=cZeizisAAAAJ&hl=it">Luca&nbsp;Di&nbsp;Giammarino</a>
+    ·
+    <a href="https://hermannblum.net/">Hermann&nbsp;Blum</a>
+    ·
+    <a href="https://www.microsoft.com/en-us/research/people/mapoll/">Marc&nbsp;Pollefeys</a>
+  </p>
+  <h2 align="center">
+  <strong>CoRL 2025</strong> <br>
+  <a href="https://www.arxiv.org/abs/2508.20981">Paper</a> |
+  <a href="https://boysun045.github.io/ActLoc-Project/"> Webpage</a> |
+  <a href="https://huggingface.co/spaces/Jeffreyli7012/ActLocDemo"> Interactive Demo</a> |
+  </h2>
 
-</div>
 
----
 
 ## 🔄 Updates
-- **Sep 15, 2025**: Initial code release
-
----
-
-## 📝 TODO List
-- [x] Single-viewpoint Selection Inference Code Release
-- [x] Single-viewpoint Selection Demo Release
-- [x] Path Planning Inference Code Release
-- [x] Path Planning Demo Release
-- [ ] Test Data and Evaluation Script Release
-- [ ] Training Data and Training Script Release
+- **Sep 22, 2025**: Check out our [online interactive demo](https://huggingface.co/spaces/Jeffreyli7012/ActLocDemo)!
+- **Sep 21, 2025**: Initial code release
 
 ---
 
@@ -66,19 +46,23 @@ conda activate actloc_env
 ---
 
 ## Example Data Download
-You can download the example data from [here](https://drive.google.com/drive/folders/1XhqJ-D92VykBgFU-moxfvp_SwavqTdl9?usp=sharing) and put it in the root folder of this repo to run the single-viewpoint selection inference code.
+We provide one example scene from [HM3D](https://aihabitat.org/datasets/hm3d/):
+```bash
+chmod +x download_example_data.sh && ./download_example_data.sh
+```
+You can also download the example data from [here](https://drive.google.com/file/d/1QssNeHx9-CzbloKmOe37NyQ0KfTRScwk/view?usp=sharing) and put it in the root folder of this repo to use for demos.
 
 ---
 
 ## Quick Start
 
-### Step 1: Predict Poses from Waypoints
+### Single Viewpoint Selection
 
-This script takes an SfM model and a list of waypoints as input, and predicts the optimal camera pose (extrinsic matrix) for each one.
+This script takes an SfM model and a list of waypoints as input, and predicts the optimal camera pose (extrinsic matrix) for each one individually.
 
 ```bash
 python demo_single.py \
-    --sfm-dir ./example_data/00005_reference_sfm \
+    --sfm-dir ./example_data/reference_sfm \
     --waypoints-file ./example_data/waypoints.txt \
     --checkpoint ./checkpoints/trained_actloc.pth \
     --output-file ./example_data/selected_poses.npz
@@ -86,36 +70,61 @@ python demo_single.py \
 
 **Expected Output**: This will create a file named `selected_poses.npz` in the `example_data` directory, which contains the calculated poses.
 
-### Step 2: Render Images from Predicted Poses
 
-Now, use the `selected_poses.npz` file generated in the previous step to render images from the 3D mesh.
+### Multiple Viewpoints Selection with Motion Constraints
+To choose viewpoint that balances localization performance and rotation continuity, run:
+```bash
+python demo_multi.py \
+    --sfm-dir ./example_data/reference_sfm \
+    --waypoints-file ./example_data/waypoints.txt \
+    --checkpoint ./checkpoints/trained_actloc.pth \
+    --output-file ./example_data/selected_poses_multi.npz \
+    --lamda 0.02
+```
+
+### Visualization
+To visualize the scene and the prediction results:
+```bash
+python vis.py \
+    --meshfile ./example_data/scene.glb \
+    --waypoints-file ./example_data/waypoints.txt \
+    --poses-file ./example_data/selected_poses.npz 
+```
+or:
+```bash
+python vis.py \
+    --meshfile ./example_data/scene.glb \
+    --waypoints-file ./example_data/waypoints.txt \
+    --poses-file ./example_data/selected_poses_multi.npz 
+```
+<p align="center">
+    <a href=""><img src="asset/vis.jpg" alt="example" width=80%></a> 
+    <br>
+</p>
+
+### Render Images from Predicted Poses
+
+To see the observation ath selected poses, use the `selected_poses.npz` file generated to render images from the 3D mesh.
 
 ```bash
 python capture_predicted_views.py \
-    --mesh-file ./example_data/yPKGKBCyYx8.glb \
+    --mesh-file ./example_data/scene.glb \
     --poses-file ./example_data/selected_poses.npz \
     --output-folder ./example_data/best_viewpoint_images
 ```
 
-**Expected Output**: This will create a new folder named `best_viewpoint_images` containing the rendered images for each successful waypoint.
+**Expected Output**: This will create a new folder named `best_viewpoint_images` containing the rendered images for each successful waypoint. This process might take a while.
 
-### Predict for Multiple Poses with Motion Constraints
-```bash
-python demo_multi.py \
-    --sfm-dir ./example_data/00005_reference_sfm \
-    --waypoints-file ./example_data/waypoints.txt \
-    --checkpoint ./checkpoints/trained_actloc.pth \
-    --output-file ./example_data/selected_poses.npz \
-    --lamda 0.03
-```
+---
 
-### Visualization
-```bash
-python vis.py \
-    --meshfile ./example_data/yPKGKBCyYx8.glb \
-    --waypoints-file ./example_data/waypoints.txt \
-    --poses-file ./example_data/selected_poses.npz 
-```
+## 📝 Roadmap
+- [x] Single-viewpoint Selection Inference Code Release
+- [x] Single-viewpoint Selection Demo Release
+- [x] Path Planning Inference Code Release
+- [x] Path Planning Demo Release
+- [ ] Test Data and Evaluation Script Release
+- [ ] Training Data and Training Script Release
+
 ---
 
 ## Citation
