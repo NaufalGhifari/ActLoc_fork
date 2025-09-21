@@ -22,7 +22,16 @@
   <a href="https://huggingface.co/spaces/Jeffreyli7012/ActLocDemo"> Interactive Demo</a> |
   </h2>
 
-
+<p align="center" style="font-size: 1.0em;">
+  <a href="">
+    <img src="asset/demo.gif" alt="example" width="85%">
+  </a>
+  <br>
+  <em>
+    We present ActLoc, a learning-based approach for active viewpoint selection. 
+    ActLoc selects viewing directions at given locations that maximize visual localization performance.
+  </em>
+</p>
 
 ## 🔄 Updates
 - **Sep 22, 2025**: Check out our [online interactive demo](https://huggingface.co/spaces/Jeffreyli7012/ActLocDemo)!
