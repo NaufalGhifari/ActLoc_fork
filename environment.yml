@@ -8,6 +8,8 @@ channel_priority: strict
 dependencies:
   - python=3.10
   - pip
+  - ninja
+  - packaging
   - numpy>=2.2,<3
   - scipy>=1.12
   - scikit-learn>=1.4
@@ -17,11 +19,12 @@ dependencies:
   - torchvision>=0.20,<0.22
   - torchaudio>=2.5,<2.7
   - pytorch-cuda=12.4        
-  - open3d>=0.19             
+  # open3d removed from here to avoid libjpeg conflict (moved into pip)   
   - pip:
       - einops==0.8.1
       - tqdm==4.67.1
       - pyquaternion==0.9.9
       - dash==3.0.4
       - plotly==6.1.2
-      - flash-attn==2.8.3
+      #- flash-attn==2.8.3 # to be installed manually w/ pip in micromamba env (pip install flash-attn==2.8.3 --no-build-isolation)
+      - open3d>=0.19
